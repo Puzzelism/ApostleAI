@@ -3,12 +3,13 @@ const logger = require("./logger");
 const config = require("./config");
 const { Wit } = require("node-wit");
 const { json } = require("express");
+const request = require("request");
 const scripture = require("./scripture");
 const porter = require("./porterStemming.js");
 
 // init the wit client using config file
 const client = new Wit({
-  accessToken: config.key,
+  accessToken: config.witkey,
 });
 
 // constructor for new bots, parameters to pass socket information
@@ -27,6 +28,11 @@ function Bot(botId, importSocket, importedIO) {
   importSocket.on("message", (data) => {
     // send message in response to new messages being recieved
     this.sendMessage(data);
+  });
+
+  importSocket.on("wolfram", (data) => {
+    // send message in response to new messages being recieved
+    this.sendWolframResponse(data, this.socket);
   });
 }
 
@@ -133,5 +139,22 @@ Bot.prototype.pickReply = function (input, responses) {
     "I understand what you're saying, but my overlords have not blessed me with the knowledge to respond...";
   return botReply;
 };
+
+Bot.prototype.sendWolframResponse = function(msg, socket){
+  let query = msg.msg.substring(1);
+
+  request('http://api.wolframalpha.com/v1/result?appid='+config.wolfid+'&i='+query, function (error, response, body) {
+    if(error){
+      //wolfram error handling
+      console.log(logger.getTime() + logger.error(error));
+    }
+    let botResponse = {
+      sender: this.id,
+      msg: body,
+    };
+    console.log(logger.getTime() + "[WOLFRAM RESPONSE]: " + logger.info(body));
+    socket.emit("message", botResponse);
+  });
+}
 
 module.exports = Bot;

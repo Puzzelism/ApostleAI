@@ -46,6 +46,11 @@ io.on('connection', (socket) => {
         io.emit('message', data);
     });
 
+    socket.on('wolfram', (data) => {
+        console.log(logger.getTime() + logger.info("[WOLFRAM QUERY] message: ") + data.msg + ' | from ' + data.sender);
+        io.emit('wolfram', data);
+    });
+
     // socket listener for disconnections, splice old sockets from the stack
     socket.on('disconnect', (socket) => {
         // splice old connections

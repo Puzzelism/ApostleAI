@@ -73,12 +73,19 @@
       $(document).on("keypress", function (e) {
         if (e.which == 13) {
           if (input.value) {
+
             let data = {
               sender: "user",
               msg: input.value,
             };
 
-            socket.emit("message", data);
+            // check to see if user is asking a wolfram question
+            if(input.value.charAt(0) == '!'){
+              socket.emit("wolfram", data);
+              console.log("emitted");
+            }else{
+              socket.emit("message", data);
+            }
             input.value = "";
           }
         }
@@ -102,17 +109,29 @@
         saveChatLog(data.sender + ": " + data.msg);
       });
 
+      socket.on("wolfram", function (data) {
+        displayMessage(data);
+        saveChatLog(data.sender + ": " + data.msg);
+      });
+
       function displayMessage(data) {
         /*  note that the message stream that comes through is
             a json object with sender and msg attributes */
 
         let messageDiv = document.createElement("div");
+        let message = "";
+
+        if(data.msg.charAt(0) == "!"){
+          message = data.msg.substring(1);
+        }else{
+          message = data.msg
+        }
 
         if (data.sender == "user") {
           messageDiv.id = "user";
           messageDiv.className = "user response box sb1";
           // This includes an image for the user (in assets/)
-          messageDiv.innerHTML = `<span id="msgSpan">${data.msg}</span><img src="assets/user.png" class="avatar">`;
+          messageDiv.innerHTML = `<span id="msgSpan">${message}</span><img src="assets/user.png" class="avatar">`;
         } else {
           let messageImg = document.createElement("img");
           let messageText = document.createElement("span");
@@ -120,7 +139,7 @@
           messageImg.src = "assets/paul.jpg";
           messageImg.className = "avatar";
           messageDiv.className = "bot response box sb2";
-          messageText.innerText = data.msg;
+          messageText.innerText = message;
           messageDiv.appendChild(messageImg);
           messageDiv.appendChild(messageText);
         }
