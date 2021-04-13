@@ -31,8 +31,6 @@ Once the dependencies have been installed, to start the local server;
 | Wikipedia | First paragraph extract | "Tell me about ... "|"Tell me about the Houston Rockets"|
 | Wolfram Alpha|Simple Response| "![query]" | "!What is the capital of France"
 
-Currently implemented is
-
 **Improved already implemented GUI**
 
 Our team improved on our already implemented GUI from Assignment 2 by adding some stylistic features as well as revolving conversation suggestions along the top of the page.
