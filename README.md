@@ -21,6 +21,18 @@ Once the dependencies have been installed, to start the local server;
 
 ## Features
 
+**IMPLEMENTED APIS**
+
+ - Implemented wikipedias api to give the bot even more access to knowledge on mundande things, simply ask the bot to tell you about a topic and it can extract the inital paragraph from the article in question.
+ - Implemented Wolfram Alpha for the same reason, the bot can respond to wolfram queries with a bang operator before questions to override normal bot questioning.
+ 
+| NAME | IMPLEMENTATION | INSTRUCTION | EXAMPLE|
+|--|--|--|--|
+| Wikipedia | First paragraph extract | "Tell me about ... "|"Tell me about the Houston Rockets"|
+| Wolfram Alpha|Simple Response| "![query]" | "!What is the capital of France"
+
+Currently implemented is
+
 **Improved already implemented GUI**
 
 Our team improved on our already implemented GUI from Assignment 2 by adding some stylistic features as well as revolving conversation suggestions along the top of the page.
