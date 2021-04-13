@@ -122,6 +122,16 @@ Bot.prototype.pickReply = function (input, responses) {
       }
 
       return botReply;
+    }else if(input.intents[0].name == "wikiQuery"){
+      // handle wikipedia callbacks
+      let query = input.entities['wit$wikipedia_search_query:wikipedia_search_query'][0].body;
+      // format query for wiki search
+      query = query.replace(/^The\s/i, " ")
+      qeury = query.split(' ').join('+')
+      query = query.slice(0, -1)
+      console.log(query);
+      this.getWikiResponse(query, this.socket);
+      return "Here's what I found on wikipedia";
     }
   }
 
@@ -156,5 +166,43 @@ Bot.prototype.sendWolframResponse = function(msg, socket){
     socket.emit("message", botResponse);
   });
 }
+
+Bot.prototype.getWikiResponse = function(query, socket){
+  request("https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&explaintext=1&titles="+query, function (error, response, body) {
+    if(error){
+      // wikipedia error handling
+      console.log(logger.getTime() + logger.error(error));
+    }
+    data = JSON.parse(body);
+    let botspeak = "";
+    if(!data.query.pages[Object.keys(data.query.pages)[0]].extract){
+      botspeak = "Nothing, my big databank is empty :c"
+    }else{
+      text = data.query.pages[Object.keys(data.query.pages)[0]].extract
+      botspeak = text.slice(0, 256);
+    }
+    let botResponse = {
+      sender: this.id,
+      msg: "Wiki article here: " + botspeak + "...",
+    };
+    socket.emit("message", botResponse);
+  });
+}
+
+/*
+else if(input.intents[0].name == "wikiQuery"){ // handle wikipedia query using the wikiQuery intent
+      console.log(input.entities['wit$wikipedia_search_query:wikipedia_search_query'][0].body);
+      let query = input.entities['wit$wikipedia_search_query:wikipedia_search_query'][0].body;
+      qeury.replaceAll("\\Wthe\\W|^the\\W|\\Wthe$", "");
+      query = query.split(' ').join('+');
+      console.log(query);
+      console.log("https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&explaintext=1&titles="+query);
+      request("https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&explaintext=1&titles="+query, function(error, response, body){
+        if(error){
+          console.log(logger.getTime() + logger.error(error));
+        }
+        return body["extract"];
+      });
+*/
 
 module.exports = Bot;

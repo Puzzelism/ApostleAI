@@ -82,7 +82,6 @@
             // check to see if user is asking a wolfram question
             if(input.value.charAt(0) == '!'){
               socket.emit("wolfram", data);
-              console.log("emitted");
             }else{
               socket.emit("message", data);
             }
